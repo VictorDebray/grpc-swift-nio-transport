@@ -39,11 +39,11 @@ let dependencies: [Package.Dependency] = [
   ),
   .package(
     url: "https://github.com/apple/swift-nio.git",
-    from: "2.96.0"
+    from: "2.100.0"
   ),
   .package(
     url: "https://github.com/apple/swift-nio-http2.git",
-    from: "1.42.0"
+    from: "1.44.0"
   ),
   .package(
     url: "https://github.com/apple/swift-nio-transport-services.git",
@@ -55,7 +55,7 @@ let dependencies: [Package.Dependency] = [
   ),
   .package(
     url: "https://github.com/apple/swift-nio-extras.git",
-    from: "1.27.0"
+    from: "1.34.1"
   ),
   .package(
     url: "https://github.com/apple/swift-certificates.git",
