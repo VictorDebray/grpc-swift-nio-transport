@@ -275,6 +275,20 @@ extension HTTP2ServerTransport {
 
         context.unixDomainSocketCredentials = await channel.unixDomainSocketPeerCredentials()
 
+        // NIO's `SocketAddress` has no vsock representation, which has two consequences here: a
+        // vsock channel is exactly the case where `localAddress` is absent, so that's the cheap
+        // test for whether it's worth asking at all; and the peer's address has to come from the
+        // channel option rather than from `remoteAddress`.
+        if channel.localAddress == nil,
+          let vsockAddress = try? await channel.getOption(.remoteVsockAddress).get()
+        {
+          context.virtualSocketCredentials = VirtualSocketCredentials(
+            contextID: GRPCNIOTransportCore.SocketAddress.VirtualSocket.ContextID(
+              rawValue: vsockAddress.cid.rawValue
+            )
+          )
+        }
+
         return context
       }
     }
@@ -317,6 +331,13 @@ extension HTTP2ServerTransport.Posix {
     /// types where peer credentials are unavailable.
     @available(gRPCSwiftNIOTransport 2.10, *)
     public var unixDomainSocketCredentials: UnixDomainSocketCredentials?
+
+    /// The credentials of the peer, when the transport is bound to a virtual socket ('vsock')
+    /// address.
+    ///
+    /// This is `nil` for connections which aren't virtual sockets.
+    @available(gRPCSwiftNIOTransport 2.10, *)
+    public var virtualSocketCredentials: VirtualSocketCredentials?
 
     public init() {
     }
